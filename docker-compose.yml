@@ -9,4 +9,26 @@ services:
     volumes:
       - ./app:/app
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py wait_for_db &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=app
+      - DB_USER=postgres
+      - DB_PASS=supersecretpassword
+    # we want our app servise to depend on db service
+    # 1) db service will start before app
+    # 2) by DB_HOST we can connect to our db container
+    depends_on:
+      - db
+
+  db:
+    # go to dockerhub to see all the available configurations
+    # in prod travis will override your user and password
+    # so they would be secure stored
+    image: postgres:10-alpine
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=supersecretpassword
