@@ -45,6 +45,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Retrieve the recipes for the authenticated user"""
         return self.queryset.filter(user=self.request.user)
 
+    # list action is for many. retrieve is for detail view
+    def get_serializer_class(self):
+        """Retrieve appropriate serializer class"""
+        if self.action == 'retrieve':
+            return serializers.RecipeDetailSerializer
+
+        return self.serializer_class
+
+
 # class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
 #                  mixins.CreateModelMixin):
 #     """Manage tags in the database"""
