@@ -189,3 +189,47 @@ class PrivateRecipeApiTests(TestCase):
     def test_partial_update_recipe(self):
         """Test updating a recipe with PATCH"""
         # patch updates the fields which are provided in a payload
+        # any field that are omitted from the request
+        # will not be modified
+        recipe = sample_recipe(user=self.user)
+        recipe.tags.add(sample_tag(user=self.user))
+
+        new_tag = sample_tag(user=self.user, name='Curry')
+
+        payload = {'title': 'Chicken tikka', 'tags': [new_tag.id]}
+
+        # make patch request to detail url
+        url = detail_url(recipe.id)
+        self.client.patch(url, payload)
+
+        # check the fields from the DB and compare with payload
+        # refreshed details from the db. (as object should
+        # be modified by patch request)
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.title, payload['title'])
+        tags = recipe.tags.all()
+        self.assertEqual(len(tags), 1)
+        self.assertIn(new_tag, tags)
+
+    def test_full_update_recipe(self):
+        """Test updating a recipe with put"""
+        # it will override the object
+        # so if we exclude fields from the object. They would be removed
+        recipe = sample_recipe(user=self.user)
+        recipe.tags.add(sample_tag(user=self.user))
+
+        payload = {
+            'title': 'Spaghetti carbonara',
+            'time_minutes': 25,
+            'price': 150.00
+        }
+        url = detail_url(recipe.id)
+        self.client.put(url, payload)
+
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.title, payload['title'])
+        self.assertEqual(recipe.time_minutes, payload['time_minutes'])
+        self.assertEqual(recipe.price, payload['price'])
+        tags = recipe.tags.all()
+        # there should not be any tags
+        self.assertEqual(len(tags), 0)

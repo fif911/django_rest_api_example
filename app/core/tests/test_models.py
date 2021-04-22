@@ -1,4 +1,6 @@
 # we have to use this function to get user model (not directly User)
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
@@ -92,3 +94,23 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(recipe), recipe.title)
+
+    @patch('uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Test that image is saved in the correct location"""
+        # UUID universally unique identifier
+        # we want to mock uuid
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        # this means any time we call uuid4 ! function
+        # that is triggered from our test it will override the default
+        # behaviour and return 'test-uuid'
+        # this allows us to reliably test how our function works
+
+        # first parameter is instance but we dont need it right now
+        # generate the file path
+        file_path = models.recipe_image_file_path(None, 'my-image.jpg')
+
+        # expected path
+        exp_path = f'uploads/recipe/{uuid}.jpg'
+        self.assertEqual(file_path, exp_path)

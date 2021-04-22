@@ -10,9 +10,10 @@ docker-compose run --rm app sh -c "python manage.py test"
 --rm to remove container after running command just to save local space 
 
 
-docker build .
+docker build . # rebuild the image and re run all the steps in our docker file
 
-dcoker-compose up
+docker-compose up --build # --build will rebuild the project (seems to be the same as docker build . )
+# sometimes needed to apply changes
 docker-compose down
 
 docker-compose 
