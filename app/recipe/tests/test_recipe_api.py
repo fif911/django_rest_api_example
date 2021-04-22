@@ -119,8 +119,8 @@ class PrivateRecipeApiTests(TestCase):
     """
     Return the value of the named attribute of object. name must be a string.
     If the string is the name of one of the object’s attributes, the result
-    is the value of that attribute. For example, getattr(x, 'foobar') is 
-    equivalent to x.foobar. If the named attribute does not exist, default 
+    is the value of that attribute. For example, getattr(x, 'foobar') is
+    equivalent to x.foobar. If the named attribute does not exist, default
     is returned if provided, otherwise AttributeError is raised."""
 
     def test_create_basic_recipe(self):
@@ -185,3 +185,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(ingredients.count(), 2)
         self.assertIn(ingredient1, ingredients)
         self.assertIn(ingredient2, ingredients)
+
+    def test_partial_update_recipe(self):
+        """Test updating a recipe with PATCH"""
+        # patch updates the fields which are provided in a payload
