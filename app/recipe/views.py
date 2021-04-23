@@ -17,7 +17,20 @@ class BaseRecipeAttrViewSet(viewsets.GenericViewSet,
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
+        # if assigned only parameter is passed
+        # filter the queryset
+        assigned_only = bool(
+            int(self.request.query_params.get('assigned_only', 0))
+        )
+        queryset = self.queryset
+        if assigned_only:
+            queryset = queryset.filter(recipe__isnull=False)
+
+        # .distinct() return a new QuerySet instance that will select only
+        # distinct results. (no duplicates)
+        return queryset.filter(
+            user=self.request.user
+        ).order_by('-name').distinct()
 
     def perform_create(self, serializer):
         """Create a new object"""
@@ -58,7 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         # recipes/?ingredients=1&ingredients=2
         # so query_params =  <QueryDict: {'ingredients': ['1', '2']}>
 
-        print(self.request.query_params)
+        # print(self.request.query_params)
         # !!!! .get will return LAST VALUE OF THE LIST !!!
         # USE GET LIST INSTEAD
         tags = self.request.query_params.getlist('tags', None)
