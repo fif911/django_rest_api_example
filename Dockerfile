@@ -26,5 +26,5 @@ RUN mkdir -p /vol/web/static
 RUN adduser -D user
 # give user perrmitions . -R means recursive
 RUN chown -R user:user /vol/
-RUN chown -R 755 /vol/web
+RUN chmod -R 755 /vol/web
 USER user

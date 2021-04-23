@@ -38,8 +38,10 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'title', 'ingredients', 'tags', 'time_minutes',
-                  'price', 'link')
-        read_only_fields = ('id',)
+                  'price', 'link', 'image')
+        # we will let change image only from upload-image view
+        # also when on PUT request it will not change the image
+        read_only_fields = ('id', 'image')
 
 
 # using RecipeSerializer
@@ -48,3 +50,12 @@ class RecipeDetailSerializer(RecipeSerializer):
     # nested serialization
     ingredients = IngredientSerializer(many=True)
     tags = TagSerializer(many=True)
+
+
+class RecipeImageSerializer(serializers.ModelSerializer):
+    """Serializer for uploading images to recipes"""
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'image')
+        read_only_fields = ('id',)
